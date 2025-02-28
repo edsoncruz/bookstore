@@ -10,7 +10,7 @@ The GET /books/available to get only book for selling.
 The POST /purchase/order to create a purchase:
 ```json
 {
-    "customerId": 9,
+    "customerId": 1,
     "books": [
         {
             "id":1,
