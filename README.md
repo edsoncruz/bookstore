@@ -3,6 +3,18 @@
 To run the application just run BookStoreApplication.class.
 It will use HSQLDB in memory and the initial data will be set automatically.
 
+# Authorization
+You need to get the authorization token by posting the username and password:
+POST http://localhost:8080/users/login
+
+```json
+{
+    "username":"admin",
+    "password":"1234"
+}
+```
+Then you need to put the header `Authorization` passing the token as value; 
+
 ## Endpoints
 The endpoints are /books, /bookTypes, /customers, /loyalties, /purchase and /users. All accepts POST, PUT, GET and DELETE.   
 Also, the POST /users/register and /users/login to create and login the user.  
