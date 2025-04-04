@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/purchases")
-public class PurchaseController implements BaseController<Purchase> {
+public class PurchaseController implements BaseController<PurchaseRequestDTO, PurchaseResponseDTO> {
 
     private final PurchaseService purchaseService;
 
@@ -23,13 +23,13 @@ public class PurchaseController implements BaseController<Purchase> {
     }
 
     @Override
-    public Purchase create(Purchase purchase) {
-        return this.purchaseService.create(purchase) ;
+    public PurchaseResponseDTO create(PurchaseRequestDTO purchaseRequestDTO) {
+        return this.purchaseService.create(purchaseRequestDTO) ;
     }
 
     @Override
-    public Purchase update(Purchase purchase) {
-        return this.purchaseService.update(purchase);
+    public PurchaseResponseDTO update(PurchaseRequestDTO purchaseRequestDTO) {
+        return this.purchaseService.update(purchaseRequestDTO);
     }
 
     @Override
@@ -40,12 +40,13 @@ public class PurchaseController implements BaseController<Purchase> {
     }
 
     @Override
-    public Purchase find(Long id) {
+    public PurchaseResponseDTO find(Long id) {
         return this.purchaseService.find(id);
+
     }
 
     @Override
-    public List<Purchase> findAll() {
+    public List<PurchaseResponseDTO> findAll() {
         return this.purchaseService.findAll();
     }
 

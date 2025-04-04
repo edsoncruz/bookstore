@@ -1,16 +1,19 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.UserRequestDTO;
+import com.bookstore.dto.UserResponseDTO;
 import com.bookstore.entity.Customer;
 import com.bookstore.entity.User;
 import com.bookstore.exception.BadRequestException;
 import com.bookstore.exception.NotFoundException;
+import com.bookstore.mapper.UserRequestMapper;
+import com.bookstore.mapper.UserResponseMapper;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.security.JwtTokenService;
 import com.bookstore.service.base.BaseService;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,49 +22,48 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.bookstore.helper.ValidationHelper.*;
 
 @Service
-public class UserService implements BaseService<User> {
+public class UserService implements BaseService<UserRequestDTO, UserResponseDTO> {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenService jwtTokenService;
+    private final UserRequestMapper userRequestMapper;
+    private final UserResponseMapper userResponseMapper;
 
-    public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenService jwtTokenService){
+    public UserService(UserRepository userRepository , PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenService jwtTokenService, UserRequestMapper userRequestMapper, UserResponseMapper userResponseMapper){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtTokenService = jwtTokenService;
+        this.userRequestMapper = userRequestMapper;
+        this.userResponseMapper = userResponseMapper;
     }
 
     @Override
-    public User create(User user) {
+    public UserResponseDTO create(UserRequestDTO userRequestDTO) {
+        User user = userRequestMapper.toEntity(userRequestDTO);
+
         commonValidation(user);
         requiredNullOrEmpty(user.getId(), "Id must be null");
         requiredTrue(userRepository.findByUsername(user.getUsername()).isEmpty(), String.format("User %s already exists", user.getUsername()));
 
-        return saveUserEncoded(user);
+        return userResponseMapper.toDTO(saveUserEncoded(user));
     }
 
     @Override
-    public User update(User user) {
+    public UserResponseDTO update(UserRequestDTO userRequestDTO) {
+        User user = userRequestMapper.toEntity(userRequestDTO);
+
         commonValidation(user);
         requiredValue(user.getId(), "Id is required");
 
-        return saveUserEncoded(user);
-    }
-
-    public User save(User user){
-        Optional<User> userOptional = userRepository.findById(user.getId());
-
-        if(userOptional.isPresent()){
-            return update(user);
-        }else {
-            return create(user);
-        }
+        return userResponseMapper.toDTO(saveUserEncoded(user));
     }
 
     @Override
@@ -72,19 +74,20 @@ public class UserService implements BaseService<User> {
     }
 
     @Override
-    public User find(Long id) {
-        Optional<User> userOptional = this.userRepository.findById(id);
-
-        if(userOptional.isPresent()) {
-            return userOptional.get();
-        }else {
-            throw new NotFoundException(String.format("User id %s not found", id));
-        }
+    public UserResponseDTO find(Long id) {
+        return this.userRepository
+                .findById(id)
+                .map(userResponseMapper::toDTO)
+                .orElseThrow(() -> new NotFoundException(String.format("User id %s not found", id)));
     }
 
     @Override
-    public List<User> findAll() {
-        return this.userRepository.findAll();
+    public List<UserResponseDTO> findAll() {
+        return this.userRepository
+                .findAll()
+                .stream()
+                .map(userResponseMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     private void commonValidation(User user){
@@ -101,8 +104,8 @@ public class UserService implements BaseService<User> {
         return userRepository.save(user);
     }
 
-    public String login(User user){
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+    public String login(UserResponseDTO userResponseDTO){
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userResponseDTO.username(), userResponseDTO.password());
 
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 

@@ -1,7 +1,8 @@
 package com.bookstore.controller;
 
 import com.bookstore.controller.base.BaseController;
-import com.bookstore.entity.Book;
+import com.bookstore.dto.BookRequestDTO;
+import com.bookstore.dto.BookResponseDTO;
 import com.bookstore.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/books")
-public class BookController implements BaseController<Book> {
+public class BookController implements BaseController<BookRequestDTO, BookResponseDTO> {
 
     private final BookService bookService;
 
@@ -22,13 +23,13 @@ public class BookController implements BaseController<Book> {
     }
 
     @Override
-    public Book create(Book book) {
-        return this.bookService.create(book) ;
+    public BookResponseDTO create(BookRequestDTO bookRequestDTO){
+        return this.bookService.create(bookRequestDTO);
     }
 
     @Override
-    public Book update(Book book) {
-        return this.bookService.update(book);
+    public BookResponseDTO update(BookRequestDTO bookRequestDTO) {
+        return this.bookService.update(bookRequestDTO);
     }
 
     @Override
@@ -39,17 +40,17 @@ public class BookController implements BaseController<Book> {
     }
 
     @Override
-    public Book find(Long id) {
+    public BookResponseDTO find(Long id) {
         return this.bookService.find(id);
     }
 
     @Override
-    public List<Book> findAll() {
+    public List<BookResponseDTO> findAll() {
         return this.bookService.findAll();
     }
 
     @GetMapping("available")
-    public List<Book> available(){
+    public List<BookResponseDTO> available(){
         return this.bookService.available();
     }
 }

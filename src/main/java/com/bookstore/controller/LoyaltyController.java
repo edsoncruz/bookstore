@@ -1,7 +1,8 @@
 package com.bookstore.controller;
 
 import com.bookstore.controller.base.BaseController;
-import com.bookstore.entity.Loyalty;
+import com.bookstore.dto.LoyaltyRequestDTO;
+import com.bookstore.dto.LoyaltyResponseDTO;
 import com.bookstore.service.LoyaltyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/loyalties")
-public class LoyaltyController implements BaseController<Loyalty> {
+public class LoyaltyController implements BaseController<LoyaltyRequestDTO, LoyaltyResponseDTO> {
 
     private final LoyaltyService loyaltyService;
 
@@ -21,13 +22,13 @@ public class LoyaltyController implements BaseController<Loyalty> {
     }
 
     @Override
-    public Loyalty create(Loyalty loyalty) {
-        return this.loyaltyService.create(loyalty) ;
+    public LoyaltyResponseDTO create(LoyaltyRequestDTO loyaltyRequestDTO) {
+        return this.loyaltyService.create(loyaltyRequestDTO) ;
     }
 
     @Override
-    public Loyalty update(Loyalty loyalty) {
-        return this.loyaltyService.update(loyalty);
+    public LoyaltyResponseDTO update(LoyaltyRequestDTO loyaltyRequestDTO) {
+        return this.loyaltyService.update(loyaltyRequestDTO);
     }
 
     @Override
@@ -38,12 +39,12 @@ public class LoyaltyController implements BaseController<Loyalty> {
     }
 
     @Override
-    public Loyalty find(Long id) {
+    public LoyaltyResponseDTO find(Long id) {
         return this.loyaltyService.find(id);
     }
 
     @Override
-    public List<Loyalty> findAll() {
+    public List<LoyaltyResponseDTO> findAll() {
         return this.loyaltyService.findAll();
     }
 }

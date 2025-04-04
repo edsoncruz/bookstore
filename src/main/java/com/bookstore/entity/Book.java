@@ -21,6 +21,7 @@ public class Book extends BaseEntity {
     private Long amount;
     private LocalDateTime dateCreated;
 
+    //TODO: Remove this logic code from here e put on Service
     @Transient
     private BigDecimal priceSingle;
 

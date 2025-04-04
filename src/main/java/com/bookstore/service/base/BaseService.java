@@ -1,15 +1,17 @@
 package com.bookstore.service.base;
 
+import com.bookstore.dto.base.BaseDTO;
+
 import java.util.List;
 
-public interface BaseService<T>{
-    T create(T entity);
+public interface BaseService<Q extends BaseDTO, R extends BaseDTO>{
+    R create(Q dtoRequest);
 
-    T update(T entity);
+    R update(Q dtoRequest);
 
     void delete(Long id);
 
-    T find(Long id);
+    R find(Long id);
 
-    List<T> findAll();
+    List<R> findAll();
 }

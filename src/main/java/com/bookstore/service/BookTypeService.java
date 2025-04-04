@@ -1,40 +1,51 @@
 package com.bookstore.service;
 
+import com.bookstore.dto.BookTypeRequestDTO;
+import com.bookstore.dto.BookTypeResponseDTO;
 import com.bookstore.entity.BookType;
 import com.bookstore.exception.NotFoundException;
+import com.bookstore.mapper.BookTypeRequestMapper;
+import com.bookstore.mapper.BookTypeResponseMapper;
 import com.bookstore.repository.BookTypeRepository;
 import com.bookstore.service.base.BaseService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.bookstore.helper.ValidationHelper.*;
 
 @Service
-public class BookTypeService implements BaseService<BookType> {
+public class BookTypeService implements BaseService<BookTypeRequestDTO, BookTypeResponseDTO> {
 
     private final BookTypeRepository bookTypeRepository;
+    private final BookTypeResponseMapper bookTypeResponseMapper;
+    private final BookTypeRequestMapper bookTypeRequestMapper;
 
-    public BookTypeService(BookTypeRepository bookTypeRepository){
+    public BookTypeService(BookTypeRepository bookTypeRepository, BookTypeResponseMapper bookTypeResponseMapper, BookTypeRequestMapper bookTypeRequestMapper){
         this.bookTypeRepository = bookTypeRepository;
+        this.bookTypeResponseMapper = bookTypeResponseMapper;
+        this.bookTypeRequestMapper = bookTypeRequestMapper;
     }
 
     @Override
-    public BookType create(BookType bookType) {
+    public BookTypeResponseDTO create(BookTypeRequestDTO bookTypeRequestDTO) {
+        BookType bookType = bookTypeRequestMapper.toEntity(bookTypeRequestDTO);
+
         commonValidation(bookType);
         requiredNullOrEmpty(bookType.getId(), "Id must be null");
 
-        return bookTypeRepository.save(bookType);
+        return bookTypeResponseMapper.toDTO(bookTypeRepository.save(bookType));
     }
 
     @Override
-    public BookType update(BookType bookType) {
+    public BookTypeResponseDTO update(BookTypeRequestDTO bookTypeRequestDTO) {
+        BookType bookType = bookTypeRequestMapper.toEntity(bookTypeRequestDTO);
         commonValidation(bookType);
         requiredValue(bookType.getId(), "Id is required");
 
-        return this.bookTypeRepository.save(bookType);
+        return bookTypeResponseMapper.toDTO(bookTypeRepository.save(bookType));
     }
 
     @Override
@@ -45,19 +56,19 @@ public class BookTypeService implements BaseService<BookType> {
     }
 
     @Override
-    public BookType find(Long id) {
-        Optional<BookType> bookOptional = this.bookTypeRepository.findById(id);
-
-        if(bookOptional.isPresent()) {
-            return bookOptional.get();
-        }else {
-            throw new NotFoundException(String.format("BookType id %s not found", id));
-        }
+    public BookTypeResponseDTO find(Long id) {
+        return this.bookTypeRepository
+                .findById(id)
+                .map(bookTypeResponseMapper::toDTO)
+                .orElseThrow(() -> new NotFoundException(String.format("BookType id %s not found", id)));
     }
 
     @Override
-    public List<BookType> findAll() {
-        return this.bookTypeRepository.findAll();
+    public List<BookTypeResponseDTO> findAll() {
+        return this.bookTypeRepository.findAll()
+                .stream()
+                .map(bookTypeResponseMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     private void commonValidation(BookType bookType){

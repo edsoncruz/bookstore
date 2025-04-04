@@ -1,7 +1,8 @@
 package com.bookstore.controller;
 
-import com.bookstore.entity.Customer;
 import com.bookstore.controller.base.BaseController;
+import com.bookstore.dto.CustomerRequestDTO;
+import com.bookstore.dto.CustomerResponseDTO;
 import com.bookstore.service.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/customers")
-public class CustomerController implements BaseController<Customer> {
+public class CustomerController implements BaseController<CustomerRequestDTO, CustomerResponseDTO> {
 
     private final CustomerService customerService;
 
@@ -21,13 +22,13 @@ public class CustomerController implements BaseController<Customer> {
     }
 
     @Override
-    public Customer create(Customer customer) {
-        return this.customerService.create(customer) ;
+    public CustomerResponseDTO create(CustomerRequestDTO customerRequestDTO) {
+        return this.customerService.create(customerRequestDTO) ;
     }
 
     @Override
-    public Customer update(Customer customer) {
-        return this.customerService.update(customer);
+    public CustomerResponseDTO update(CustomerRequestDTO customerRequestDTO) {
+        return this.customerService.update(customerRequestDTO);
     }
 
     @Override
@@ -38,12 +39,12 @@ public class CustomerController implements BaseController<Customer> {
     }
 
     @Override
-    public Customer find(Long id) {
+    public CustomerResponseDTO find(Long id) {
         return this.customerService.find(id);
     }
 
     @Override
-    public List<Customer> findAll() {
+    public List<CustomerResponseDTO> findAll() {
         return this.customerService.findAll();
     }
 }

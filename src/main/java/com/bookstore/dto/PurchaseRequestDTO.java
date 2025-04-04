@@ -1,14 +1,12 @@
 package com.bookstore.dto;
 
-import com.bookstore.entity.Purchase;
+import com.bookstore.dto.base.BaseDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
-@Data
-@EqualsAndHashCode
-public class PurchaseRequestDTO {
-    private Long customerId;
-    private List<BookRequestDTO> books;
-}
+public record PurchaseRequestDTO(
+    Long customerId,
+    List<PurchaseBookRequestDTO> books
+) implements BaseDTO {}

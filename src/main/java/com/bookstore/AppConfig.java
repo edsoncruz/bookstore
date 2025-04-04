@@ -1,9 +1,6 @@
 package com.bookstore;
 
-import com.bookstore.entity.Book;
-import com.bookstore.entity.BookType;
-import com.bookstore.entity.Customer;
-import com.bookstore.entity.User;
+import com.bookstore.dto.*;
 import com.bookstore.enums.Role;
 import com.bookstore.service.BookService;
 import com.bookstore.service.BookTypeService;
@@ -43,66 +40,33 @@ public class AppConfig {
     @PostConstruct
     public void dataSetup(){
         if(bookTypeService.findAll().isEmpty()){
-            BookType newReleases = new BookType();
-            newReleases.setName("New Releases");
-            newReleases.setDiscountOverall(new BigDecimal("0"));
-            newReleases.setMinimalBundle(null);
-            newReleases.setDiscountBundle(new BigDecimal("0"));
-            newReleases.setPayableWithPoints(false);
 
-            BookType regular = new BookType();
-            regular.setName("Regular");
-            regular.setDiscountOverall(new BigDecimal(0));
-            regular.setMinimalBundle(3);
-            regular.setDiscountBundle(new BigDecimal("0.1"));
-            regular.setPayableWithPoints(true);
+            BookTypeResponseDTO newReleasesResponse = bookTypeService.create(
+                    new BookTypeRequestDTO("New Releases", new BigDecimal("0"),null, new BigDecimal("0"),false)
+            );
+            BookTypeResponseDTO regularResponse = bookTypeService.create(
+                    new BookTypeRequestDTO("Regular", new BigDecimal(0),3,new BigDecimal("0.1"),true)
+            );
+            BookTypeResponseDTO oldEditionsResponse = bookTypeService.create(
+                    new BookTypeRequestDTO("Old editions", new BigDecimal("0.2"), 3, new BigDecimal("0.05"),true)
+            );
 
-            BookType oldEditions = new BookType();
-            oldEditions.setName("Old editions");
-            oldEditions.setDiscountOverall(new BigDecimal("0.2"));
-            oldEditions.setMinimalBundle(3);
-            oldEditions.setDiscountBundle(new BigDecimal("0.05"));
-            oldEditions.setPayableWithPoints(true);
+            bookService.create(
+                    new BookRequestDTO("Clean Code: A Handbook of Agile Software Craftsmanship", new BigDecimal("40.90"),50L,null,null,null, regularResponse)
+            );
 
-            newReleases = bookTypeService.create(newReleases);
-            regular = bookTypeService.create(regular);
-            oldEditions = bookTypeService.create(oldEditions);
+            bookService.create(
+                    new BookRequestDTO("Harry Potter and the Philosopher's Stone", new BigDecimal("50.90"),100L,null,null,null, newReleasesResponse)
+            );
+            bookService.create(
+                    new BookRequestDTO("Sherlock Holmes: A study in scarlet", new BigDecimal("29.90"),70L,null,null,null, oldEditionsResponse)
+            );
 
-            Book book1 = new Book();
-            book1.setTitle("Clean Code: A Handbook of Agile Software Craftsmanship");
-            book1.setPrice(new BigDecimal("40.90"));
-            book1.setAmount(50L);
-            book1.setBookType(regular);
+            UserResponseDTO user = userService.create(new UserRequestDTO("admin", "1234", Role.ADMIN));
 
-            Book book2 = new Book();
-            book2.setTitle("Harry Potter and the Philosopher's Stone");
-            book2.setPrice(new BigDecimal("50.90"));
-            book2.setAmount(100L);
-            book2.setBookType(newReleases);
-
-            Book book3 = new Book();
-            book3.setTitle("Sherlock Holmes: A study in scarlet");
-            book3.setPrice(new BigDecimal("29.90"));
-            book3.setAmount(70L);
-            book3.setBookType(oldEditions);
-
-            book1 = bookService.create(book1);
-            book2 = bookService.create(book2);
-            book3 = bookService.create(book3);
-
-            User user = new User();
-            user.setUsername("admin");
-            user.setPassword("1234");
-            user.setRole(Role.ADMIN);
-
-            userService.create(user);
-
-            Customer customer1 = new Customer();
-            customer1.setName("Edson Cruz");
-            customer1.setEmail("edson.l.cruz@gmail.com");
-            customer1.setUser(user);
-
-            customer1 = customerService.create(customer1);
+            customerService.create(
+                    new CustomerRequestDTO("Edson Cruz", "edson.l.cruz@gmail.com", user)
+            );
         }
     }
 }

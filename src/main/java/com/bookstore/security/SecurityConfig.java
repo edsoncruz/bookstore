@@ -30,7 +30,7 @@ public class SecurityConfig{
         return httpSecurity.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((requests) -> requests
-                    .requestMatchers(HttpMethod.GET, "/books","/bookTypes").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/","/books","/bookTypes","/swagger-ui/**","/api-docs/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/users/login","/users/register").permitAll()
                     .requestMatchers(HttpMethod.GET, "/books","/bookTypes").permitAll()
                     .requestMatchers(HttpMethod.POST, "/books","/bookTypes","/customer","/loyalties","/users").hasRole(Role.ADMIN.name())

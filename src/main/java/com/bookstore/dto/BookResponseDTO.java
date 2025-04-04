@@ -6,7 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
-public record BookRequestDTO(
+public record BookResponseDTO(
+    Long id,
     String title,
     BigDecimal price,
     Long amount,
